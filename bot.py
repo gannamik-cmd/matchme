@@ -9,8 +9,8 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO,
     handlers=[
-        logging.StreamHandler(sys.stdout),  # Для Render
-        logging.FileHandler('bot.log')      # Для локального логирования
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('bot.log')
     ]
 )
 logger = logging.getLogger(__name__)
@@ -202,6 +202,21 @@ async def about_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text(about_text, parse_mode='Markdown')
 
+def get_number_meaning(number: int) -> str:
+    """Возвращает описание значения числа"""
+    meanings = {
+        1: "Лидер, новатор, независимость",
+        2: "Дипломат, миролюбие, партнерство",
+        3: "Творец, оптимизм, самовыражение",
+        4: "Практик, стабильность, надежность",
+        5: "Авантюрист, свобода, изменения",
+        6: "Заботливый, ответственность, семья",
+        7: "Аналитик, мудрость, духовность",
+        8: "Организатор, успех, материальные блага",
+        9: "Гуманист, сострадание, завершение"
+    }
+    return meanings.get(number, "Уникальная энергия")
+
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик текстовых сообщений"""
     try:
@@ -270,21 +285,6 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode='Markdown'
         )
 
-def get_number_meaning(number: int) -> str:
-    """Возвращает описание значения числа"""
-    meanings = {
-        1: "Лидер, новатор, независимость",
-        2: "Дипломат, миролюбие, партнерство",
-        3: "Творец, оптимизм, самовыражение",
-        4: "Практик, стабильность, надежность",
-        5: "Авантюрист, свобода, изменения",
-        6: "Заботливый, ответственность, семья",
-        7: "Аналитик, мудрость, духовность",
-        8: "Организатор, успех, материальные блага",
-        9: "Гуманист, сострадание, завершение"
-    }
-    return meanings.get(number, "Уникальная энергия")
-
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Обработчик ошибок"""
     logger.error(f"Ошибка: {context.error}")
@@ -322,15 +322,15 @@ def main():
         logger.info("✅ Бот успешно инициализирован")
         logger.info("🔄 Запуск polling...")
         
-        # Запускаем бота
+        # Запускаем бота - БЕЗ параметров pool_timeout и timeout!
         app.run_polling(
             drop_pending_updates=True,
-            allowed_updates=Update.ALL_TYPES,
-            close_loop=False
+            allowed_updates=Update.ALL_TYPES
         )
         
     except KeyboardInterrupt:
         logger.info("🛑 Бот остановлен пользователем (Ctrl+C)")
+        sys.exit(0)
     except Exception as e:
         logger.error(f"❌ Критическая ошибка при запуске: {e}")
         sys.exit(1)
